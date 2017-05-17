@@ -1,0 +1,1 @@
+web: gunicorn starElo.wsgi --log-file -
