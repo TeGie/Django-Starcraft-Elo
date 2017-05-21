@@ -21,10 +21,10 @@ def calc_ladder_score(winning_team, losing_team):
     losing_team_obtained_score = losing_team_r - old_sum_lose_scores
 
     for e in winning_team:
-        e.ladder_score += (winning_team_obtained_score / len(winning_team))
+        e.ladder_score += winning_team_obtained_score
         e.ladder_score = round(e.ladder_score)
     for e in losing_team:
-        e.ladder_score += (losing_team_obtained_score / len(losing_team))
+        e.ladder_score += losing_team_obtained_score
         e.ladder_score = round(e.ladder_score)
 
 def get_K(score):
