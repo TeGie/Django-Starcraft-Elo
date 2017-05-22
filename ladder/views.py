@@ -5,8 +5,8 @@ from django.shortcuts import render
 from django.views import View
 from django.contrib import messages
 from .models import Users, Game_Results, Game_Result_Users, DEFAULT_LADDER_SCORE
-from .forms import ResultFrom
-from .utils import calc_ladder_score
+from .forms import ResultFrom, SimulationForm
+from .utils import calc_ladder_score, calc_rating
 
 
 class HomeView(View):
@@ -70,24 +70,24 @@ class HomeView(View):
             race = data["race_" + str(i)]
             is_random = data["is_random_" + str(i)]
 
+            if not user_name:
+                continue
+
             try:
                 user_obj = Users.objects.get(user_name=user_name, valid=True)
-                # user_id = Users.objects.get(user_name=user_name, valid=True).pk
             except Users.DoesNotExist:
                 continue
 
             if user_obj.pk == 0 or race == '0':
                 continue
 
-            if not user_name:
-                continue
 
             if i % 2 == 0:
                 winning_team.append(user_obj)
                 win_races.append(race)
                 win_is_randoms.append(is_random)
             else:
-                losing_team.append(Users.objects.get(user_name=user_name))
+                losing_team.append(user_obj)
                 lose_races.append(race)
                 lose_is_randoms.append(is_random)
 
@@ -221,3 +221,162 @@ class ManageUserView(View):
         return render(request, "ladder/manage_user.html", context)
 
 
+class SimulationView(View):
+    min_diff = 987654321
+    min_combination = []
+    def get(self, request, *args, **kwargs):
+        return self.renderView(request, SimulationForm())
+
+    def post(self, request, *args, **kwargs):
+        form = SimulationForm(request.POST)
+
+        team_a_rating = 0
+        team_b_rating = 0
+
+        if (request.POST.get('calculate_rating')):
+            if form.is_valid():
+                team_a_rating, team_b_rating = self.calc_rating(request, form.cleaned_data)
+
+        elif (request.POST.get('choose_up')):
+            if form.is_valid():
+                self.choose_up(request, form)
+                team_a_rating, team_b_rating = self.calc_rating(request, form.cleaned_data)
+
+                form = SimulationForm(initial=form.cleaned_data)
+
+        return self.renderView(request, form, team_a_rating, team_b_rating)
+
+    def calc_rating(self, request, data):
+        team_a_score = 0
+        team_b_score = 0
+
+        for i in range(0, 8):
+            user_name = data["user_name_" + str(i)]
+
+            if not user_name:
+                continue
+            try:
+                user_obj = Users.objects.get(user_name=user_name, valid=True)
+            except Users.DoesNotExist:
+                continue
+
+            if user_obj.pk == 0:
+                continue
+
+
+            if i % 2 == 0:
+                team_a_score += user_obj.ladder_score
+            else:
+                team_b_score += user_obj.ladder_score
+
+        if team_a_score <= 0 or team_b_score <= 0:
+            messages.add_message(request, messages.WARNING, 'invalid input')
+            return
+
+        team_a_rating = calc_rating(team_a_score, team_b_score)
+        team_b_rating = 1 - team_a_rating
+
+        return team_a_rating, team_b_rating
+
+    def choose_up(self, request, form):
+        data = form.cleaned_data
+
+        candidate = []
+
+        for i in range(0, 8):
+            user_name = data["user_name_" + str(i)]
+
+            if not user_name:
+                continue
+
+            try:
+                user_obj = Users.objects.get(user_name=user_name, valid=True)
+            except Users.DoesNotExist:
+                continue
+
+            if user_obj.pk == 0:
+                continue
+
+
+            candidate.append(user_obj)
+
+
+        team_a_number = int(len(candidate) / 2)
+        picked = [-1, -1, -1, -1]
+        self.min_diff = 987654321
+        self.min_combination = []
+        self.combination(len(candidate), team_a_number, candidate, picked)
+
+        team_a_index = 0
+        team_b_index = 1
+        for i in range(len(candidate)):
+            if i in self.min_combination:
+                form.cleaned_data["user_name_" + str(team_a_index)] = candidate[i].user_name
+                # self.set_simulation_form(team_a_index, form, candidate[i].user_name)
+                team_a_index += 2
+            else:
+                # self.set_simulation_form(team_b_index, form, candidate[i].user_name)
+                form.cleaned_data["user_name_" + str(team_b_index)] = candidate[i].user_name
+                # form.fields["user_name_" + str(team_b_index)].value = candidate[i].user_name
+                team_b_index += 2
+
+        for i in range(team_a_index, 7, 2):
+            form.cleaned_data["user_name_" + str(i)] = ''
+        for i in range(team_b_index, 8, 2):
+            form.cleaned_data["user_name_" + str(i)] = ''
+
+
+    def combination(self, n, r, candidate, picked):
+        if r == 0:
+            team_a_score = 0
+            team_b_score = 0
+            for i in range(len(candidate)):
+                if i in picked:
+                    team_a_score += candidate[i].ladder_score
+                else:
+                    team_b_score += candidate[i].ladder_score
+
+
+            diff = abs(team_a_score - team_b_score)
+
+            if (diff < self.min_diff):
+                self.min_diff = diff
+                self.min_combination = picked
+            return
+        elif n < r:
+            return
+        else:
+            picked[r - 1] = n - 1
+            self.combination(n - 1, r - 1, candidate, picked)
+            self.combination(n - 1, r, candidate, picked)
+
+    def set_simulation_form(self, index, form, user_name):
+        print(form["user_name_0"])
+        if index == 0:
+            form.user_name_0 = user_name
+        elif index == 1:
+            form.user_name_1 = user_name
+        elif index == 2:
+            form.user_name_2 = user_name
+        elif index == 3:
+            form.user_name_3 = user_name
+        elif index == 4:
+            form.user_name_4 = user_name
+        elif index == 5:
+            form.user_name_5 = user_name
+        elif index == 6:
+            form.user_name_6 = user_name
+        elif index == 7:
+            form.user_name_7 = user_name
+
+    def renderView(self, request, form, team_a_rating=0, team_b_rating=0):
+
+        context = {
+            "form": form,
+        }
+
+        if (team_a_rating != 0 and team_b_rating != 0):
+            context["rating_a"] = team_a_rating
+            context["rating_b"] = team_b_rating
+
+        return render(request, "ladder/simulation.html", context)

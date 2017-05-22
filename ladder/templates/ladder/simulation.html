@@ -1,0 +1,93 @@
+{% extends 'ladder/base.html' %}
+
+{% block nav-sidebar %}
+<li><a href="/index">Overview</a></li>
+<li class="active"><a href="/simulation">Simulation <span class="sr-only">(current)</span></a></li>
+{% endblock nav-sidebar %}
+
+
+{% block content %}
+
+
+<h1 class="page-header">Simulation</h1>
+
+
+<div class="container-fluid">
+  <form method='POST' action='.'> {% csrf_token %}
+    <div class="row">
+      <div class="col-sm-4">
+          A team
+          {{ form.user_name_0 }}
+      </div>
+      <div class="col-sm-4">
+          B team
+          {{ form.user_name_1 }}
+      </div>
+    </div>
+    </br>
+    <div class="row">
+      <div class="col-sm-4">
+          A team
+          {{ form.user_name_2 }}
+      </div>
+      <div class="col-sm-4">
+          B team
+          {{ form.user_name_3 }}
+      </div>
+    </div>
+    </br>
+    <div class="row">
+      <div class="col-sm-4">
+          A team
+          {{ form.user_name_4 }}
+      </div>
+      <div class="col-sm-4">
+          B team
+          {{ form.user_name_5 }}
+      </div>
+    </div>
+    </br>
+    <div class="row">
+      <div class="col-sm-4">
+          A team
+          {{ form.user_name_6 }}
+      </div>
+      <div class="col-sm-4">
+          B team
+          {{ form.user_name_7 }}
+      </div>
+    </div>
+
+    </br>
+    <div class="row">
+      <div class="col-sm-4">
+        A team 승률:
+        {{ rating_a }}
+      </div>
+      <div class="col-sm-4">
+        B team 승률:
+        {{ rating_b }}
+      </div>
+    </div>
+    </br>
+
+    <input name="choose_up" class='btn btn-primary' type='submit' value='Choose up' >
+    <input name="calculate_rating" class='btn btn-primary' type='submit' value='Calculate rating' >
+  </form>
+</div>
+
+
+
+{% if messages %}
+   <script>
+    {% for message in messages %}
+        alert("{{ message }}");
+    {% endfor %}
+   </script>
+{% endif %}
+
+
+
+
+
+{% endblock content %}
