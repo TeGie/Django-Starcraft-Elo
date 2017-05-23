@@ -126,7 +126,7 @@ class SimulationView(View):
 
             if (diff < self.min_diff):
                 self.min_diff = diff
-                self.min_combination = picked
+                self.min_combination = list(picked)
             return
         elif n < r:
             return
