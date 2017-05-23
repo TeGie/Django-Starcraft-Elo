@@ -1,7 +1,7 @@
 *.pyc
 staticfiles
 
-starElo/settings/local.py
+starElo/settings/development.py
 
 .Python
 bin/

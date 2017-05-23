@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Django settings for starElo project.
 
@@ -13,7 +15,8 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) #TODO
+#TODO: template, static 폴더의 위치를 src 밑에 두기 위해 BASE_DIR 경로를 변경합니다.
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 # Quick-start development settings - unsuitable for production
@@ -25,7 +28,8 @@ SECRET_KEY = 'k_boxo8wa9-g1*6z*ads$8s(95xq5iv2uss4k9k!prt+5tukj9'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['star-elo.herokuapp.com']  #TODO
+#TODO: 필요한 값을 넣어줍니다.
+ALLOWED_HOSTS = ['star-elo.herokuapp.com']
 
 
 # Application definition
@@ -38,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    #TODO: startapp 으로 만든 app 의 이름을 추가해줍니다.
     'ladder',   #TODO
 ]
 
@@ -57,7 +62,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # 'DIRS': [],
-        'DIRS': [os.path.join(BASE_DIR, "templates")],  #TODO
+        #TODO: template 폴더의 위치를 src 밑에 두기 위해 경로를 변경합니다.
+        'DIRS': [os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -82,7 +88,7 @@ WSGI_APPLICATION = 'starElo.wsgi.application'
 #         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #     }
 # }
-#TODO
+#TODO: db 는 postgresql 을 사용합니다.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -94,9 +100,11 @@ DATABASES = {
     }
 }
 # Update database configuration with $DATABASE_URL.
+#TODO: heroku 에서 postgresql 을 사용하기 위해 아래 코드를 추가해줘야 됩니다.
 import dj_database_url
 db_from_env = dj_database_url.config()
 DATABASES['default'].update(db_from_env)
+
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -135,7 +143,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 # STATIC_URL = '/static/'
-#TODO
+#TODO: static files 을 사용하기 위핸 설정입니다.
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
