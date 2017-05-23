@@ -1,7 +1,7 @@
 {% extends 'ladder/base.html' %}
 
 {% block nav-sidebar %}
-<li class="active"><a href="/index">Overview <span class="sr-only">(current)</span></a></li>
+<li class="active"><a href="/overview">Overview <span class="sr-only">(current)</span></a></li>
 <li><a href="/simulation">Simulation</a></li>
 {% endblock nav-sidebar %}
 
@@ -191,7 +191,7 @@ function deleteResult()
 
   $.ajax({
     type:"POST",
-    url:"/index/",
+    url:"/overview/",
     data: {
             'method': 'delete_game_result',
             'pk': result_id

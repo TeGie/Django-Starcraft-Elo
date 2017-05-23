@@ -16,12 +16,14 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
-from ladder.views import HomeView, ManageUserView, SimulationView
+from ladder.views.overview import Overview
+from ladder.views.manage_user import ManageUserView
+from ladder.views.simulation import SimulationView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', HomeView.as_view()),
-    url(r'^index/', HomeView.as_view()),
+    url(r'^$', Overview.as_view()),
+    url(r'^overview/', Overview.as_view()),
     url(r'^manage_user/', ManageUserView.as_view()),
     url(r'^simulation/', SimulationView.as_view()),
 ]
