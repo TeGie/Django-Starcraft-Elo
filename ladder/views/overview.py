@@ -4,6 +4,7 @@ from django.shortcuts import render
 
 from django.views import View
 from django.contrib import messages
+from datetime import timedelta
 from ..models.users import Users, DEFAULT_LADDER_SCORE
 from ..models.game_results import Game_Results
 from ..models.game_result_users import Game_Result_Users
@@ -172,7 +173,9 @@ class Overview(View):
 
             result.str_lose = str_lose
 
-
+        # change to local time
+        for result in game_results:
+            result.created += timedelta(hours=9)
 
         context = {
             "users": users,
