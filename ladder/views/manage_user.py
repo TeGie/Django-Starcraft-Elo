@@ -3,6 +3,7 @@ from django.shortcuts import render
 # Create your views here.
 
 from django.views import View
+from django.contrib import messages
 from ..models.users import Users
 from ..models.game_result_users import Game_Result_Users
 
@@ -17,6 +18,8 @@ class ManageUserView(View):
             user_name = request.POST['user_name']
             if user_name:
                 obj, created = Users.objects.get_or_create(user_name=user_name)
+                if not created:
+                    messages.add_message(request, messages.WARNING, "can not create user")
         elif (request.POST.get('method') and request.POST['method'] == 'delete'):
             try:
                 obj = Users.objects.get(pk=request.POST['pk'])
@@ -24,7 +27,7 @@ class ManageUserView(View):
                 obj.save()
                 # return HttpResponseRedirect("/manage_user/")
             except Users.DoesNotExist:
-                print("is not exist.")
+                messages.add_message(request, messages.WARNING, "Does not exist")
 
         return self.renderView(request)
 

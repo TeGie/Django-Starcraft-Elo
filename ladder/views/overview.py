@@ -84,6 +84,9 @@ class Overview(View):
             if user_obj.pk == 0 or race == '0':
                 continue
 
+            if user_obj in winning_team or user_obj in losing_team:
+                messages.add_message(request, messages.WARNING, 'invalid input')
+                return
 
             if i % 2 == 0:
                 winning_team.append(user_obj)

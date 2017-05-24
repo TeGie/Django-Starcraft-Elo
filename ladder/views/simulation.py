@@ -37,7 +37,7 @@ class SimulationView(View):
     def calc_rating(self, request, data):
         team_a_score = 0
         team_b_score = 0
-
+        user_objs = []
         for i in range(0, 8):
             user_name = data["user_name_" + str(i)]
 
@@ -51,15 +51,20 @@ class SimulationView(View):
             if user_obj.pk == 0:
                 continue
 
+            if user_obj in user_objs:
+                messages.add_message(request, messages.WARNING, 'invalid input')
+                return 0, 0
 
             if i % 2 == 0:
                 team_a_score += user_obj.ladder_score
             else:
                 team_b_score += user_obj.ladder_score
 
+            user_objs.append(user_obj)
+
         if team_a_score <= 0 or team_b_score <= 0:
             messages.add_message(request, messages.WARNING, 'invalid input')
-            return
+            return 0, 0
 
         team_a_rating = calc_rating(team_a_score, team_b_score)
         team_b_rating = 1 - team_a_rating
